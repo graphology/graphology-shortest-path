@@ -68,4 +68,80 @@ describe('unweighted', function() {
       assert.strictEqual(path, null);
     });
   });
+
+  describe('singleSource', function() {
+    it('should throw if given invalid arguments', function() {
+      assert.throws(function() {
+        library.singleSource(null);
+      }, /graphology/);
+
+      assert.throws(function() {
+        library.singleSource(new Graph());
+      }, /number/);
+
+      assert.throws(function() {
+        library.singleSource(new Graph(), 'test');
+      }, /source/);
+    });
+
+    it('should properly return the paths.', function() {
+      var graph = new Graph();
+      graph.mergeEdge(1, 2);
+      graph.mergeEdge(2, 3);
+      graph.mergeEdge(3, 4);
+
+      var paths = library.singleSource(graph, 1);
+
+      assert.deepEqual(paths, {
+        1: ['1'],
+        2: ['1', '2'],
+        3: ['1', '2', '3'],
+        4: ['1', '2', '3', '4']
+      });
+    });
+
+    it('should take directedness into account.', function() {
+      var graph = new DirectedGraph();
+      graph.mergeEdge(1, 2);
+      graph.mergeEdge(2, 3);
+      graph.mergeEdge(3, 4);
+
+      var paths = library.singleSource(graph, 4);
+
+      assert.deepEqual(paths, {
+        4: ['4']
+      });
+
+      graph.addEdge(4, 2);
+
+      paths = library.singleSource(graph, 4);
+
+      assert.deepEqual(paths, {
+        4: ['4'],
+        2: ['4', '2'],
+        3: ['4', '2', '3']
+      });
+    });
+  });
+
+  describe('shortestPath', function() {
+    it('the polymorphism should work properly.', function() {
+      var graph = new Graph();
+      graph.mergeEdge(1, 2);
+      graph.mergeEdge(2, 3);
+      graph.mergeEdge(3, 4);
+
+      var path = library(graph, 2, 4);
+
+      assert.deepEqual(path, ['2', '3', '4']);
+
+      var paths = library(graph, 2);
+
+      assert.deepEqual(paths, {
+        2: ['2'],
+        3: ['2', '3'],
+        4: ['2', '3', '4']
+      });
+    });
+  });
 });

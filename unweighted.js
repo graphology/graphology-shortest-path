@@ -15,8 +15,6 @@ var isGraph = require('graphology-utils/is-graph');
  * @param  {any}        source - Source node.
  * @param  {any}        target - Target node.
  * @return {array|null}        - Found path or `null`.
- *
- * @throws {Error} - Will throw if given graph is invalid.
  */
 function bidirectional(graph, source, target) {
   if (!isGraph(graph))
@@ -30,6 +28,9 @@ function bidirectional(graph, source, target) {
 
   if (!graph.hasNode(target))
     throw new Error('graphology-shortest-path: the "' + target + '" target node does not exist in the given graph.');
+
+  source = '' + source;
+  target = '' + target;
 
   // TODO: do we need a self loop to go there?
   if (source === target) {
@@ -153,9 +154,81 @@ function bidirectional(graph, source, target) {
 }
 
 /**
+ * Function attempting to find the shortest path in the graph between the
+ * given source node & all the other nodes.
+ *
+ * @param  {Graph}  graph  - Target graph.
+ * @param  {any}    source - Source node.
+ * @return {object}        - The map of found paths.
+ */
+
+// TODO: cutoff option
+function singleSource(graph, source) {
+  if (!isGraph(graph))
+    throw new Error('graphology-shortest-path: invalid graphology instance.');
+
+  if (arguments.length < 2)
+    throw new Error('graphology-shortest-path: invalid number of arguments. Expecting at least 2.');
+
+  if (!graph.hasNode(source))
+    throw new Error('graphology-shortest-path: the "' + source + '" source node does not exist in the given graph.');
+
+  source = '' + source;
+
+  var nextLevel = {},
+      paths = {},
+      currentLevel,
+      neighbors,
+      v,
+      w,
+      i,
+      l;
+
+  nextLevel[source] = true;
+  paths[source] = [source];
+
+  while (Object.keys(nextLevel).length) {
+    currentLevel = nextLevel;
+    nextLevel = {};
+
+    for (v in currentLevel) {
+      neighbors = graph.outNeighbors(v);
+      neighbors.push.apply(neighbors, graph.undirectedNeighbors(v));
+
+      for (i = 0, l = neighbors.length; i < l; i++) {
+        w = neighbors[i];
+
+        if (!paths[w]) {
+          paths[w] = paths[v].concat(w);
+          nextLevel[w] = true;
+        }
+      }
+    }
+  }
+
+  return paths;
+}
+
+/**
+ * Main polymorphic function taking either only a source or a
+ * source/target combo.
+ *
+ * @param  {Graph}  graph      - Target graph.
+ * @param  {any}    source     - Source node.
+ * @param  {any}    [target]   - Target node.
+ * @return {array|object|null} - The map of found paths.
+ */
+function shortestPath(graph, source, target) {
+  if (arguments.length < 3)
+    return singleSource(graph, source);
+
+  return bidirectional(graph, source, target);
+}
+
+/**
  * Exporting.
  */
-var main = {};
-main.bidirectional = bidirectional;
+shortestPath.bidirectional = bidirectional;
+shortestPath.singleSource = singleSource;
 
-module.exports = main;
+module.exports = shortestPath;
