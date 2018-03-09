@@ -252,7 +252,7 @@ function brandes(graph, source) {
       l,
       m;
 
-  for (i = 0, l = nodes.length; i < l; i++) {
+  for (i = 0, l = nodes.length; i < l; i++) {
     v = nodes[i];
     P[v] = [];
     sigma[v] = 0;
@@ -279,7 +279,7 @@ function brandes(graph, source) {
     for (j = 0, m = neighbors.length; j < m; j++) {
       w = neighbors[j];
 
-      if (!(w in D)) {
+      if (!(w in D)) {
         queue.enqueue(w);
         D[w] = Dv + 1;
       }
