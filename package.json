@@ -42,6 +42,7 @@
     "extends": "@yomguithereal/eslint-config"
   },
   "dependencies": {
-    "graphology-utils": "^1.1.2"
+    "graphology-utils": "^1.1.2",
+    "mnemonist": "^0.18.0"
   }
 }

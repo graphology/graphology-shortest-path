@@ -16,6 +16,8 @@ npm install graphology-shortest-path
   - [shortestPath](#shortestpath)
   - [bidirectional](#bidirectional)
   - [singleSource](#singlesource)
+* [Dijkstra](#dijkstra)
+  - [singleSource](#dijkstra-singlesource)
 
 ## Unweighted
 
@@ -74,3 +76,28 @@ import {singleSource} from 'graphology-shortest-path/unweighted';
 // Returning every shortest path between source & every node of the graph
 const paths = singleSource(graph, source);
 ```
+
+*Arguments*
+
+* **graph** *Graph*: a `graphology` instance.
+* **source** *any*: source node.
+
+## Dijkstra
+
+<h3 id="dijkstra-singlesource">singleSource</h3> 
+
+Return a map of every shortest path between the given source & all the nodes of the weighted graph.
+
+```js
+import {dijkstra} from 'graphology-shortest-path';
+// Alternatively, if you want to load only the relevant code
+import dijkstra from 'graphology-shortest-path/dijkstra';
+
+// Returning every shortest path between source & every node of the graph
+const paths = dijkstra.singleSource(graph, source);
+```
+
+*Arguments*
+
+* **graph** *Graph*: a `graphology` instance.
+* **source** *any*: source node.
