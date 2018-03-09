@@ -43,7 +43,7 @@ const paths = shortestPath(graph, source);
 
 * **graph** *Graph*: a `graphology` instance.
 * **source** *any*: source node.
-* **[target]** *?any*: target node.
+* **target** *?any*: optionally, target node.
 
 ### bidirectional
 
@@ -95,9 +95,13 @@ import dijkstra from 'graphology-shortest-path/dijkstra';
 
 // Returning every shortest path between source & every node of the graph
 const paths = dijkstra.singleSource(graph, source);
+
+// If you store edges' weight in custom attribute
+const paths = dijkstra.singleSource(graph, source, 'customWeight');
 ```
 
 *Arguments*
 
 * **graph** *Graph*: a `graphology` instance.
 * **source** *any*: source node.
+* **weightAttribute** *?string* [`weight`]: name of the weight attribute. 
