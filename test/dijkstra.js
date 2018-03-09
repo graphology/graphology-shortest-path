@@ -63,4 +63,40 @@ describe('dijkstra', function() {
       });
     });
   });
+
+  describe('brandes', function() {
+    it('applying Ulrik Brandes\' method should work properly.', function() {
+      var result = library.brandes(graph, '1');
+
+      assert.deepEqual(result, [
+        ['1', '2', '8', '3', '4', '5', '7', '6', '9'],
+        {
+          '1': [],
+          '2': ['1'],
+          '3': ['2'],
+          '4': ['2'],
+          '5': ['4'],
+          '6': ['5'],
+          '7': ['8'],
+          '8': ['1'],
+          '9': ['7'],
+          '10': [],
+          '11': []
+        },
+        {
+          '1': 2,
+          '2': 2,
+          '3': 2,
+          '4': 2,
+          '5': 2,
+          '6': 2,
+          '7': 2,
+          '8': 2,
+          '9': 2,
+          '10': 0,
+          '11': 0
+        }
+      ]);
+    });
+  });
 });

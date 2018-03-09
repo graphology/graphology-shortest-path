@@ -20,6 +20,7 @@ npm install graphology-shortest-path
 * [Dijkstra](#dijkstra)
   - [bidirectional](#dijkstra-bidirectional)
   - [singleSource](#dijkstra-singlesource)
+  - [brandes](#dijkstra-brandes)
 
 ## Unweighted
 
@@ -147,4 +148,26 @@ const paths = dijkstra.singleSource(graph, source, 'customWeight');
 
 * **graph** *Graph*: a `graphology` instance.
 * **source** *any*: source node.
-* **weightAttribute** *?string* [`weight`]: name of the weight attribute. 
+* **weightAttribute** *?string* [`weight`]: name of the weight attribute.
+
+<h3 id="dijkstra-brandes">brandes</h3> 
+
+Apply Ulrik Brandes' method to collect single source shortest paths from the given node. This is mostly used to compute betweenness centrality.
+
+```js
+import {dijkstra} from 'graphology-shortest-path';
+// Alternatively, if you want to load only the relevant code
+import dijkstra from 'graphology-shortest-path/dijkstra';
+
+// Returning S, P & sigma
+const [S, P, sigma] = dijkstra.brandes(graph, source);
+
+// If you store edges' weight in custom attribute
+const [S, P, sigma] = dijkstra.brandes(graph, source, 'customWeight');
+```
+
+*Arguments*
+
+* **graph** *Graph*: a `graphology` instance.
+* **source** *any*: source node.
+* **weightAttribute** *?string* [`weight`]: name of the weight attribute.

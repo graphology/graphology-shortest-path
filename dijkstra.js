@@ -33,6 +33,30 @@ function DIJKSTRA_HEAP_COMPARATOR(a, b) {
   return 0;
 }
 
+function BRANDES_DIJKSTRA_HEAP_COMPARATOR(a, b) {
+  if (a[0] > b[0])
+    return 1;
+  if (a[0] < b[0])
+    return -1;
+
+  if (a[1] > b[1])
+    return 1;
+  if (a[1] < b[1])
+    return -1;
+
+  if (a[2] > b[2])
+    return 1;
+  if (a[2] < b[2])
+    return -1;
+
+  if (a[3] > b[3])
+    return 1;
+  if (a[3] < b[3])
+    return - 1;
+
+  return 0;
+}
+
 var GET_NEIGHBORS = [
   function(graph, node) {
     return graph
@@ -293,11 +317,95 @@ function bidirectionalDijkstra(graph, source, target, weightAttribute) {
 }
 
 /**
+ * Function using Ulrik Brandes' method to map single source shortest paths
+ * from selected node.
+ *
+ * @param  {Graph}  graph           - Target graph.
+ * @param  {any}    source          - Source node.
+ * @param  {string} weightAttribute - Name of the weight attribute.
+ * @return {array}                  - [Stack, Paths, Sigma]
+ */
+function brandes(graph, source, weightAttribute) {
+  source = '' + source;
+  weightAttribute = weightAttribute || DEFAULTS.weightAttribute;
+
+  var S = [],
+      P = {},
+      sigma = {};
+
+  var nodes = graph.nodes(),
+      edges,
+      item,
+      pred,
+      dist,
+      cost,
+      v,
+      w,
+      e,
+      i,
+      l;
+
+  for (i = 0, l = nodes.length; i < l; i++) {
+    v = nodes[i];
+    P[v] = [];
+    sigma[v] = 0;
+  }
+
+  var D = {};
+
+  sigma[source] = 1;
+
+  var seen = {};
+  seen[source] = 0;
+
+  var count = 0;
+
+  var Q = new Heap(BRANDES_DIJKSTRA_HEAP_COMPARATOR);
+  Q.push([0, count++, source, source]);
+
+  while (Q.size) {
+    item = Q.pop();
+    dist = item[0];
+    pred = item[2];
+    v = item[3];
+
+    if (v in D)
+      continue;
+
+    sigma[v] += sigma[pred];
+    S.push(v);
+    D[v] = dist;
+
+    edges = graph
+      .undirectedEdges(v)
+      .concat(graph.outEdges(v));
+
+    for (i = 0, l = edges.length; i < l; i++) {
+      e = edges[i];
+      w = graph.opposite(v, e);
+      cost = dist + (graph.getEdgeAttribute(e, weightAttribute) || 1);
+
+      if (!(w in D) && (!(w in seen) || cost < seen[w])) {
+        seen[w] = cost;
+        Q.push([cost, count++, v, w]);
+        sigma[w] = 0;
+        P[w] = [v];
+      }
+      else if (cost === seen[w]) {
+        sigma[w] += sigma[v];
+        P[w].push(v);
+      }
+    }
+  }
+
+  return [S, P, sigma];
+}
+
+/**
  * Exporting.
  */
-var m = {};
-
-m.bidirectional = bidirectionalDijkstra;
-m.singleSource = singleSourceDijkstra;
-
-module.exports = m;
+module.exports = {
+  bidirectional: bidirectionalDijkstra,
+  singleSource: singleSourceDijkstra,
+  brandes: brandes
+};
