@@ -230,6 +230,10 @@ function shortestPath(graph, source, target) {
  * Function using Ulrik Brandes' method to map single source shortest paths
  * from selected node.
  *
+ * [Reference]:
+ * Ulrik Brandes: A Faster Algorithm for Betweenness Centrality.
+ * Journal of Mathematical Sociology 25(2):163-177, 2001.
+ *
  * @param  {Graph}  graph      - Target graph.
  * @param  {any}    source     - Source node.
  * @return {array}             - [Stack, Paths, Sigma]
