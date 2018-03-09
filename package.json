@@ -33,15 +33,15 @@
   },
   "homepage": "https://github.com/graphology/graphology-shortest-path#readme",
   "devDependencies": {
-    "@yomguithereal/eslint-config": "^3.0.0",
-    "eslint": "^3.5.0",
-    "graphology": "0.5.1",
-    "mocha": "^3.0.2"
+    "@yomguithereal/eslint-config": "^4.0.0",
+    "eslint": "^3.19.0",
+    "graphology": "0.11.1",
+    "mocha": "^5.0.4"
   },
   "eslintConfig": {
     "extends": "@yomguithereal/eslint-config"
   },
   "dependencies": {
-    "graphology-utils": "^1.1.1"
+    "graphology-utils": "^1.1.2"
   }
 }
