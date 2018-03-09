@@ -30,6 +30,22 @@ describe('dijkstra', function() {
     graph.mergeEdge(edge[0], edge[1], {weight: edge[2]});
   });
 
+  describe('bidirectional', function() {
+    it('should correctly find the shortest path between two nodes.', function() {
+      var path = library.bidirectional(graph, 1, 9);
+
+      assert.deepEqual(path, ['1', '8', '7', '9']);
+
+      path = library.bidirectional(graph, 1, 6);
+
+      assert.deepEqual(path, ['1', '2', '4', '5', '6']);
+
+      path = library.bidirectional(graph, 1, 11);
+
+      assert.strictEqual(path, null);
+    });
+  });
+
   describe('singleSource', function() {
     it('should correctly find the shortest path between source and all other nodes.', function() {
       var paths = library.singleSource(graph, '1');

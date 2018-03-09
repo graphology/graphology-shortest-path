@@ -8,29 +8,13 @@ var isGraph = require('graphology-utils/is-graph'),
     Heap = require('mnemonist/heap');
 
 /**
- * Defaults.
+ * Defaults & helpers.
  */
 var DEFAULTS = {
   weightAttribute: 'weight'
 };
 
-/**
- * Multisource Dijkstra shortest path abstract function. This function is the
- * basis of the algorithm that every other will use.
- *
- * Note that this implementation was basically copied from networkx.
- * TODO: it might be more performant to use a dedicated objet for the heap's
- * items.
- *
- * @param  {Graph}  graph           - The graphology instance.
- * @param  {array}  sources         - A list of sources.
- * @param  {string} weightAttribute - Name of the weight attribute.
- * @param  {number} cutoff          - Maximum depth of the search.
- * @param  {string} target          - Optional target to reach.
- * @param  {object} paths           - Optional paths object to maintain.
- * @return {object}                 - Returns the paths.
- */
-function dijkstraHeapComparator(a, b) {
+function DIJKSTRA_HEAP_COMPARATOR(a, b) {
   if (a[0] > b[0])
     return 1;
   if (a[0] < b[0])
@@ -49,6 +33,147 @@ function dijkstraHeapComparator(a, b) {
   return 0;
 }
 
+var GET_NEIGHBORS = [
+  function(graph, node) {
+    return graph
+      .undirectedEdges(node)
+      .concat(graph.outEdges(node));
+  },
+  function(graph, node) {
+    return graph
+      .undirectedEdges(node)
+      .concat(graph.inEdges(node));
+  }
+];
+
+/**
+ * Bidirectional Dijkstra shortest path between source & target node abstract.
+ *
+ * Note that this implementation was basically copied from networkx.
+ *
+ * @param  {Graph}  graph           - The graphology instance.
+ * @param  {string} source          - Source node.
+ * @param  {string} target          - Target node.
+ * @param  {string} weightAttribute - Name of the weight attribute.
+ * @param  {array}                  - The found path if any and its cost.
+ */
+function abstractBidirectionalDijkstra(graph, source, target, weightAttribute) {
+  source = '' + source;
+  target = '' + target;
+
+  // Sanity checks
+  if (!isGraph(graph))
+    throw new Error('graphology-shortest-path/dijkstra: invalid graphology instance.');
+
+  if (source && !graph.hasNode(source))
+    throw new Error('graphology-shortest-path/dijkstra: the "' + source + '" source node does not exist in the given graph.');
+
+  if (target && !graph.hasNode(target))
+    throw new Error('graphology-shortest-path/dijkstra: the "' + target + '" target node does not exist in the given graph.');
+
+  weightAttribute = weightAttribute || DEFAULTS.weightAttribute;
+
+  var getWeight = function(e) {
+    return graph.getEdgeAttribute(e, weightAttribute);
+  };
+
+  if (source === target)
+    return [0, [source]];
+
+  var distances = [{}, {}],
+      paths = [{}, {}],
+      fringe = [new Heap(DIJKSTRA_HEAP_COMPARATOR), new Heap(DIJKSTRA_HEAP_COMPARATOR)],
+      seen = [{}, {}];
+
+  paths[0][source] = [source];
+  paths[1][target] = [target];
+
+  seen[0][source] = 0;
+  seen[1][target] = 0;
+
+  var finalPath,
+      finalDistance = Infinity;
+
+  var count = 0,
+      dir = 1,
+      item,
+      edges,
+      cost,
+      d,
+      v,
+      u,
+      e,
+      i,
+      l;
+
+  fringe[0].push([0, count++, source]);
+  fringe[1].push([0, count++, target]);
+
+  while (fringe[0].size && fringe[1].size) {
+
+    // Swapping direction
+    dir = 1 - dir;
+
+    item = fringe[dir].pop();
+    d = item[0];
+    v = item[2];
+
+    if (v in distances[dir])
+      continue;
+
+    distances[dir][v] = d;
+
+    // Shortest path is found?
+    if (v in distances[1 - dir])
+      return [finalDistance, finalPath];
+
+    edges = GET_NEIGHBORS[dir](graph, v);
+
+    for (i = 0, l = edges.length; i < l; i++) {
+      e = edges[i];
+      u = graph.opposite(v, e);
+      cost = distances[dir][v] + getWeight(e);
+
+      if (u in distances[dir] && cost < distances[dir][u]) {
+        throw Error('graphology-shortest-path/dijkstra: contradictory paths found. Do some of your edges have a negative weight?');
+      }
+      else if (!(u in seen[dir]) || cost < seen[dir][u]) {
+        seen[dir][u] = cost;
+        fringe[dir].push([cost, count++, u]);
+        paths[dir][u] = paths[dir][v].concat(u);
+
+        if (u in seen[0] && u in seen[1]) {
+          d = seen[0][u] + seen[1][u];
+
+          if (!finalDistance || finalDistance > d) {
+            finalDistance = d;
+            finalPath = paths[0][u].concat(paths[1][u].slice(0, -1).reverse());
+          }
+        }
+      }
+    }
+  }
+
+  // No path was found
+  return [Infinity, null];
+}
+
+/**
+ * Multisource Dijkstra shortest path abstract function. This function is the
+ * basis of the algorithm that every other will use.
+ *
+ * Note that this implementation was basically copied from networkx.
+ * TODO: it might be more performant to use a dedicated objet for the heap's
+ * items.
+ *
+ * @param  {Graph}  graph           - The graphology instance.
+ * @param  {array}  sources         - A list of sources.
+ * @param  {string} weightAttribute - Name of the weight attribute.
+ * @param  {number} cutoff          - Maximum depth of the search.
+ * @param  {string} target          - Optional target to reach.
+ * @param  {object} paths           - Optional paths object to maintain.
+ * @return {object}                 - Returns the paths.
+ */
 function abstractDijkstraMultisource(
   graph,
   sources,
@@ -67,13 +192,13 @@ function abstractDijkstraMultisource(
   weightAttribute = weightAttribute || DEFAULTS.weightAttribute;
 
   // Building necessary functions
-  var getWeight = function(n) {
-    return graph.getEdgeAttribute(n, weightAttribute);
+  var getWeight = function(edge) {
+    return graph.getEdgeAttribute(edge, weightAttribute);
   };
 
   var distances = {},
       seen = {},
-      fringe = new Heap(dijkstraHeapComparator);
+      fringe = new Heap(DIJKSTRA_HEAP_COMPARATOR);
 
   var count = 0,
       edges,
@@ -163,10 +288,16 @@ function singleSourceDijkstra(graph, source, weightAttribute) {
   return paths;
 }
 
+function bidirectionalDijkstra(graph, source, target, weightAttribute) {
+  return abstractBidirectionalDijkstra(graph, source, target, weightAttribute)[1];
+}
+
 /**
  * Exporting.
  */
 var m = {};
+
+m.bidirectional = bidirectionalDijkstra;
 m.singleSource = singleSourceDijkstra;
 
 module.exports = m;
