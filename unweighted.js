@@ -5,7 +5,8 @@
  * Basic algorithms to find the shortest paths between nodes in a graph
  * whose edges are not weighted.
  */
-var isGraph = require('graphology-utils/is-graph');
+var isGraph = require('graphology-utils/is-graph'),
+    Queue = require('mnemonist/queue');
 
 /**
  * Function attempting to find the shortest path in a graph between
@@ -226,9 +227,78 @@ function shortestPath(graph, source, target) {
 }
 
 /**
+ * Function using Ulrik Brandes' method to map single source shortest paths
+ * from selected node.
+ *
+ * @param  {Graph}  graph      - Target graph.
+ * @param  {any}    source     - Source node.
+ * @return {array}             - [Stack, Paths, Sigma]
+ */
+function brandes(graph, source) {
+  source = '' + source;
+
+  var S = [],
+      P = {},
+      sigma = {};
+
+  var nodes = graph.nodes(),
+      Dv,
+      sigmav,
+      neighbors,
+      v,
+      w,
+      i,
+      j,
+      l,
+      m;
+
+  for (i = 0, l = nodes.length; i < l; i++) {
+    v = nodes[i];
+    P[v] = [];
+    sigma[v] = 0;
+  }
+
+  var D = {};
+
+  sigma[source] = 1;
+  D[source] = 0;
+
+  var queue = Queue.of(source);
+
+  while (queue.size) {
+    v = queue.dequeue();
+    S.push(v);
+
+    Dv = D[v];
+    sigmav = sigma[v];
+
+    neighbors = graph
+      .undirectedNeighbors(v)
+      .concat(graph.outNeighbors(v));
+
+    for (j = 0, m = neighbors.length; j < m; j++) {
+      w = neighbors[j];
+
+      if (!(w in D)) {
+        queue.enqueue(w);
+        D[w] = Dv + 1;
+      }
+
+      if (D[w] === Dv + 1) {
+        sigma[w] += sigmav;
+        P[w].push(v);
+      }
+    }
+  }
+
+  return [S, P, sigma];
+}
+
+/**
  * Exporting.
  */
 shortestPath.bidirectional = bidirectional;
 shortestPath.singleSource = singleSource;
+shortestPath.brandes = brandes;
 
 module.exports = shortestPath;

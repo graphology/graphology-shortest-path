@@ -16,6 +16,7 @@ npm install graphology-shortest-path
   - [shortestPath](#shortestpath)
   - [bidirectional](#bidirectional)
   - [singleSource](#singlesource)
+  - [brandes](#brandes)
 * [Dijkstra](#dijkstra)
   - [bidirectional](#dijkstra-bidirectional)
   - [singleSource](#dijkstra-singlesource)
@@ -76,6 +77,24 @@ import {singleSource} from 'graphology-shortest-path/unweighted';
 
 // Returning every shortest path between source & every node of the graph
 const paths = singleSource(graph, source);
+```
+
+*Arguments*
+
+* **graph** *Graph*: a `graphology` instance.
+* **source** *any*: source node.
+
+### brandes
+
+Apply Ulrik Brandes' method to collect single source shortest paths from the given node. This is mostly used to compute betweenness centrality.
+
+```js
+import {brandes} from 'graphology-shortest-path';
+// Alternatively, if you want to load only the relevant code
+import {brandes} from 'graphology-shortest-path/unweighted';
+
+// Returning S, P & sigma
+const [S, P, sigma] = brandes(graph, source);
 ```
 
 *Arguments*

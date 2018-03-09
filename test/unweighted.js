@@ -7,7 +7,22 @@ var assert = require('assert'),
     graphology = require('graphology');
 
 var Graph = graphology.Graph,
-    DirectedGraph = graphology.DirectedGraph;
+    DirectedGraph = graphology.DirectedGraph,
+    UndirectedGraph = graphology.UndirectedGraph;
+
+var EDGES = [
+  [1, 2],
+  [1, 8],
+  [2, 3],
+  [2, 4],
+  [4, 5],
+  [5, 6],
+  [6, 7],
+  [7, 8],
+  [7, 9],
+  [8, 9],
+  [10, 11]
+];
 
 describe('unweighted', function() {
 
@@ -142,6 +157,48 @@ describe('unweighted', function() {
         3: ['2', '3'],
         4: ['2', '3', '4']
       });
+    });
+  });
+
+  describe('brandes', function() {
+    var graph = new UndirectedGraph();
+
+    EDGES.forEach(function(edge) {
+      graph.mergeEdge(edge[0], edge[1]);
+    });
+
+    it('applying Ulrik Brandes\' method should work properly.', function() {
+      var result = library.brandes(graph, 1);
+
+      assert.deepEqual(result, [
+        ['1', '2', '8', '3', '4', '7', '9', '5', '6'],
+        {
+          '1': [],
+          '2': ['1'],
+          '3': ['2'],
+          '4': ['2'],
+          '5': ['4'],
+          '6': ['7'],
+          '7': ['8'],
+          '8': ['1'],
+          '9': ['8'],
+          '10': [],
+          '11': []
+        },
+        {
+          '1': 1,
+          '2': 1,
+          '3': 1,
+          '4': 1,
+          '5': 1,
+          '6': 1,
+          '7': 1,
+          '8': 1,
+          '9': 1,
+          '10': 0,
+          '11': 0
+        }
+      ]);
     });
   });
 });
