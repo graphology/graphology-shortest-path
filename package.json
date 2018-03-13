@@ -1,9 +1,10 @@
 {
   "name": "graphology-shortest-path",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Shortest path functions for graphology.",
   "main": "index.js",
   "files": [
+    "dijkstra.js",
     "index.js",
     "unweighted.js"
   ],
