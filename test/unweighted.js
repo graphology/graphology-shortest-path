@@ -61,7 +61,9 @@ describe('unweighted', function() {
 
     it('should return `null` when no path is found.', function() {
       var graph = new Graph();
-      graph.addNodesFrom([1, 2, 3]);
+      graph.addNode(1);
+      graph.addNode(2);
+      graph.addNode(3);
 
       var path = library.bidirectional(graph, 1, 3);
 

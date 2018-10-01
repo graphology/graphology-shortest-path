@@ -63,7 +63,7 @@ function bidirectional(graph, source, target) {
     getSuccessors = graph.outNeighbors.bind(graph);
   }
   else {
-    getPredecessors = getSuccessors = graph.neighbors.bind(graph);
+    getPredecessors = getSuccessors = graph.undirectedNeighbors.bind(graph);
   }
 
   var predecessor = {},
