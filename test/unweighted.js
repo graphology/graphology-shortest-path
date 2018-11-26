@@ -84,6 +84,28 @@ describe('unweighted', function() {
 
       assert.strictEqual(path, null);
     });
+
+    it('should handle directed cycles.', function() {
+      var graph = new DirectedGraph();
+
+      graph.mergeEdge(0, 1);
+      graph.mergeEdge(1, 2);
+      graph.mergeEdge(2, 0);
+
+      var path = library.bidirectional(graph, 0, 2)
+
+      assert.deepEqual(path, ['0', '1', '2'])
+    });
+
+    it('should handle undirected cycles.', function() {
+      var graph = new UndirectedGraph();
+
+      graph.mergeEdge(0, 1);
+
+      var path = library.bidirectional(graph, 0, 1);
+
+      assert.deepEqual(path, ['0', '1']);
+    });
   });
 
   describe('singleSource', function() {

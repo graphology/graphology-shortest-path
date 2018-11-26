@@ -98,12 +98,12 @@ function bidirectional(graph, source, target) {
         for (j = 0, m = neighbors.length; j < m; j++) {
           neighbor = neighbors[j];
 
-          if (!predecessor[neighbor]) {
+          if (!(neighbor in predecessor)) {
             forwardFringe.push(neighbor);
             predecessor[neighbor] = node;
           }
 
-          if (successor[neighbor]) {
+          if (neighbor in successor) {
 
             // Path is found!
             break outer;
@@ -122,12 +122,12 @@ function bidirectional(graph, source, target) {
         for (j = 0, m = neighbors.length; j < m; j++) {
           neighbor = neighbors[j];
 
-          if (!successor[neighbor]) {
+          if (!(successor in neighbor)) {
             reverseFringe.push(neighbor);
             successor[neighbor] = node;
           }
 
-          if (predecessor[neighbor]) {
+          if (neighbor in predecessor) {
 
             // Path is found!
             break outer;
