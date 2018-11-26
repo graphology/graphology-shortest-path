@@ -122,7 +122,7 @@ function bidirectional(graph, source, target) {
         for (j = 0, m = neighbors.length; j < m; j++) {
           neighbor = neighbors[j];
 
-          if (!(successor in neighbor)) {
+          if (!(neighbor in successor)) {
             reverseFringe.push(neighbor);
             successor[neighbor] = node;
           }

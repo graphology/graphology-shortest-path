@@ -106,6 +106,23 @@ describe('unweighted', function() {
 
       assert.deepEqual(path, ['0', '1']);
     });
+
+    it('Issue #4.', function() {
+      var graph = new UndirectedGraph();
+
+      graph.addNode(0);
+      graph.addNode(1);
+      graph.addNode(2);
+      graph.addNode(3);
+      graph.addEdge(0, 1);
+      graph.addEdge(0, 2);
+      graph.addEdge(1, 2);
+      graph.addEdge(2, 3);
+
+      var path = library.bidirectional(graph, 0, 3);
+
+      assert.deepEqual(path, ['0', '2', '3']);
+    });
   });
 
   describe('singleSource', function() {
