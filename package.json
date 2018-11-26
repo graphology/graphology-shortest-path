@@ -1,6 +1,6 @@
 {
   "name": "graphology-shortest-path",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Shortest path functions for graphology.",
   "main": "index.js",
   "files": [
