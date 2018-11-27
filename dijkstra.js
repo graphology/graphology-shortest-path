@@ -57,19 +57,6 @@ function BRANDES_DIJKSTRA_HEAP_COMPARATOR(a, b) {
   return 0;
 }
 
-var GET_NEIGHBORS = [
-  function(graph, node) {
-    return graph
-      .undirectedEdges(node)
-      .concat(graph.outEdges(node));
-  },
-  function(graph, node) {
-    return graph
-      .undirectedEdges(node)
-      .concat(graph.inEdges(node));
-  }
-];
-
 /**
  * Bidirectional Dijkstra shortest path between source & target node abstract.
  *
@@ -151,7 +138,9 @@ function abstractBidirectionalDijkstra(graph, source, target, weightAttribute) {
     if (v in distances[1 - dir])
       return [finalDistance, finalPath];
 
-    edges = GET_NEIGHBORS[dir](graph, v);
+    edges = dir === 1 ?
+      graph.inboundEdges(v) :
+      graph.outboundEdges(v);
 
     for (i = 0, l = edges.length; i < l; i++) {
       e = edges[i];
