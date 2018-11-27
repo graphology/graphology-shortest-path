@@ -85,6 +85,8 @@ function bidirectional(graph, source, target) {
       l,
       m;
 
+  var found = false;
+
   outer:
   while (forwardFringe.length && reverseFringe.length) {
     if (forwardFringe.length <= reverseFringe.length) {
@@ -106,6 +108,7 @@ function bidirectional(graph, source, target) {
           if (neighbor in successor) {
 
             // Path is found!
+            found = true;
             break outer;
           }
         }
@@ -130,12 +133,16 @@ function bidirectional(graph, source, target) {
           if (neighbor in predecessor) {
 
             // Path is found!
+            found = true;
             break outer;
           }
         }
       }
     }
   }
+
+  if (!found)
+    return null;
 
   var path = [];
 

@@ -107,7 +107,7 @@ describe('unweighted', function() {
       assert.deepEqual(path, ['0', '1']);
     });
 
-    it('Issue #4.', function() {
+    it('Issue #4.1', function() {
       var graph = new UndirectedGraph();
 
       graph.addNode(0);
@@ -122,6 +122,23 @@ describe('unweighted', function() {
       var path = library.bidirectional(graph, 0, 3);
 
       assert.deepEqual(path, ['0', '2', '3']);
+    });
+
+    it('Issue #4.2', function() {
+      var graph = new UndirectedGraph();
+
+      graph.addNode(0);
+      graph.addNode(1);
+      graph.addNode(2);
+      graph.addEdge(0, 1);
+
+      var path = library.bidirectional(graph, 2, 0);
+
+      assert.strictEqual(path, null);
+
+      path = library.bidirectional(graph, 0, 2);
+
+      assert.strictEqual(path, null);
     });
   });
 
