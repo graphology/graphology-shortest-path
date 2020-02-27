@@ -4,6 +4,7 @@
   "description": "Shortest path functions for graphology.",
   "main": "index.js",
   "files": [
+    "*.d.ts",
     "dijkstra.js",
     "index.js",
     "unweighted.js"
@@ -43,6 +44,7 @@
     "extends": "@yomguithereal/eslint-config"
   },
   "dependencies": {
+    "graphology-types": "^0.16.0",
     "graphology-utils": "^1.7.0",
     "mnemonist": "^0.32.0"
   }
