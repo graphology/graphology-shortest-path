@@ -7,6 +7,8 @@
  */
 var isGraph = require('graphology-utils/is-graph'),
     Queue = require('mnemonist/queue');
+    // PointerVector = require('mnemonist/vector').PointerVector,
+    // typed = require('mnemonist/utils/typed-arrays');
 
 /**
  * Function attempting to find the shortest path in a graph between
@@ -39,32 +41,8 @@ function bidirectional(graph, source, target) {
   }
 
   // Binding functions
-  var getPredecessors,
-      getSuccessors;
-
-  // TODO: move outside this function
-  if (graph.type === 'mixed') {
-    getPredecessors = function(node) {
-      var result = graph.inNeighbors(node);
-
-      result.push.apply(result, graph.undirectedNeighbors(node));
-      return result;
-    };
-
-    getSuccessors = function(node) {
-      var result = graph.outNeighbors(node);
-
-      result.push.apply(result, graph.undirectedNeighbors(node));
-      return result;
-    };
-  }
-  else if (graph.type === 'directed') {
-    getPredecessors = graph.inNeighbors.bind(graph);
-    getSuccessors = graph.outNeighbors.bind(graph);
-  }
-  else {
-    getPredecessors = getSuccessors = graph.undirectedNeighbors.bind(graph);
-  }
+  var getPredecessors = graph.inboundNeighbors.bind(graph),
+      getSuccessors = graph.outboundNeighbors.bind(graph);
 
   var predecessor = {},
       successor = {};
@@ -200,8 +178,7 @@ function singleSource(graph, source) {
     nextLevel = {};
 
     for (v in currentLevel) {
-      neighbors = graph.outNeighbors(v);
-      neighbors.push.apply(neighbors, graph.undirectedNeighbors(v));
+      neighbors = graph.outboundNeighbors(v);
 
       for (i = 0, l = neighbors.length; i < l; i++) {
         w = neighbors[i];
@@ -283,9 +260,7 @@ function brandes(graph, source) {
     Dv = D[v];
     sigmav = sigma[v];
 
-    neighbors = graph
-      .undirectedNeighbors(v)
-      .concat(graph.outNeighbors(v));
+    neighbors = graph.outboundNeighbors(v);
 
     for (j = 0, m = neighbors.length; j < m; j++) {
       w = neighbors[j];
@@ -304,6 +279,32 @@ function brandes(graph, source) {
 
   return [S, P, sigma];
 }
+
+// function NeighborhoodIndex(graph) {
+//   var PointerArray = typed.getPointerArray(graph.order);
+
+//   // NOTE:
+//   this.neighborhood = new PointerVector(graph.directedSize + graph.undirectedSize * 2);
+//   this.starts = new PointerArray(graph.order);
+//   this.lengths = new PointerArray(graph.order);
+//   this.nodes = graph.nodes();
+
+//   var i, l, j, m, node, neighbors, neighbor;
+
+//   for (i = 0, l = graph.order; i < l; i++) {
+//     node = this.nodes[i];
+//     neighbors = graph.undirectedNeighbors(node)
+//       .concat(graph.outNeighbors(node));
+
+//     this.starts[i] = this.neighborhood.length;
+//     this.lengths[i] = neighbors.length;
+
+//     for (j = 0, m = neighbors.length; j < m; j++) {
+//       neighbor = neighbors[j];
+//       this.neighborhood.push(neighbor);
+//     }
+//   }
+// }
 
 /**
  * Exporting.

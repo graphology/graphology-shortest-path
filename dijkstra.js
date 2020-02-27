@@ -248,9 +248,7 @@ function abstractDijkstraMultisource(
     if (v === target)
       break;
 
-    edges = graph
-      .undirectedEdges(v)
-      .concat(graph.outEdges(v));
+    edges = graph.outboundEdges(v);
 
     for (j = 0, m = edges.length; j < m; j++) {
       e = edges[j];
@@ -369,9 +367,7 @@ function brandes(graph, source, weightAttribute) {
     S.push(v);
     D[v] = dist;
 
-    edges = graph
-      .undirectedEdges(v)
-      .concat(graph.outEdges(v));
+    edges = graph.outboundEdges(v);
 
     for (i = 0, l = edges.length; i < l; i++) {
       e = edges[i];
