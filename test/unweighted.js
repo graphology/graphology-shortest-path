@@ -264,12 +264,16 @@ describe('unweighted', function() {
     it('the indexed version should also work properly.', function() {
       var indexedBrandes = library.createIndexedBrandes(graph);
       var result = indexedBrandes(1);
+      var S = result[0].toArray().reverse();
+      result[0].clear();
+      result[0] = S;
 
       assert.deepEqual(result, expected);
 
       assert.doesNotThrow(function() {
         graph.forEachNode(function(node) {
-          indexedBrandes(node);
+          result = indexedBrandes(node);
+          result[0].clear();
         });
       });
     });

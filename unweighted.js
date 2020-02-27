@@ -8,7 +8,8 @@
 var isGraph = require('graphology-utils/is-graph'),
     Queue = require('mnemonist/queue'),
     PointerVector = require('mnemonist/vector').PointerVector,
-    typed = require('mnemonist/utils/typed-arrays');
+    typed = require('mnemonist/utils/typed-arrays'),
+    FixedStack = require('mnemonist/fixed-stack');
 
 /**
  * Function attempting to find the shortest path in a graph between
@@ -339,16 +340,14 @@ function createIndexedBrandes(graph) {
   var neighborhoodIndex = new OutboundNeighborhoodIndex(graph);
   var N = neighborhoodIndex.neighborhood.array;
 
-  var sigma = {},
+  var S = new FixedStack(Array, graph.order),
+      sigma = {},
       P = {};
 
-  // TODO: transform S in FixedStack
   // TODO: more aggressive indexation relying on indices without objects
 
   return function(source) {
     source = '' + source;
-
-    var S = [];
 
     var Dv,
         sigmav,
