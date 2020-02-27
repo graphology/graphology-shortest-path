@@ -6,9 +6,9 @@
  * whose edges are not weighted.
  */
 var isGraph = require('graphology-utils/is-graph'),
-    Queue = require('mnemonist/queue');
-    // PointerVector = require('mnemonist/vector').PointerVector,
-    // typed = require('mnemonist/utils/typed-arrays');
+    Queue = require('mnemonist/queue'),
+    PointerVector = require('mnemonist/vector').PointerVector,
+    typed = require('mnemonist/utils/typed-arrays');
 
 /**
  * Function attempting to find the shortest path in a graph between
@@ -280,31 +280,127 @@ function brandes(graph, source) {
   return [S, P, sigma];
 }
 
-// function NeighborhoodIndex(graph) {
-//   var PointerArray = typed.getPointerArray(graph.order);
+function OutboundNeighborhoodIndex(graph) {
+  var PointerArray = typed.getPointerArray(graph.order);
 
-//   // NOTE:
-//   this.neighborhood = new PointerVector(graph.directedSize + graph.undirectedSize * 2);
-//   this.starts = new PointerArray(graph.order);
-//   this.lengths = new PointerArray(graph.order);
-//   this.nodes = graph.nodes();
+  this.neighborhood = new PointerVector(graph.directedSize + graph.undirectedSize * 2);
+  this.starts = new PointerArray(graph.order);
+  this.lengths = new PointerArray(graph.order);
+  this.nodes = graph.nodes();
 
-//   var i, l, j, m, node, neighbors, neighbor;
+  // TODO: it may be possible to drop this index
+  this.ids = {};
 
-//   for (i = 0, l = graph.order; i < l; i++) {
-//     node = this.nodes[i];
-//     neighbors = graph.undirectedNeighbors(node)
-//       .concat(graph.outNeighbors(node));
+  var i, l, j, m, node, neighbors, neighbor;
 
-//     this.starts[i] = this.neighborhood.length;
-//     this.lengths[i] = neighbors.length;
+  for (i = 0, l = graph.order; i < l; i++)
+    this.ids[this.nodes[i]] = i;
 
-//     for (j = 0, m = neighbors.length; j < m; j++) {
-//       neighbor = neighbors[j];
-//       this.neighborhood.push(neighbor);
-//     }
-//   }
-// }
+  for (i = 0, l = graph.order; i < l; i++) {
+    node = this.nodes[i];
+    neighbors = graph.outboundNeighbors(node);
+
+    this.starts[i] = this.neighborhood.length;
+    this.lengths[i] = neighbors.length;
+
+    for (j = 0, m = neighbors.length; j < m; j++) {
+      neighbor = neighbors[j];
+      this.neighborhood.push(this.ids[neighbor]);
+    }
+  }
+}
+
+OutboundNeighborhoodIndex.prototype.bounds = function(node) {
+  var idx = this.ids[node];
+
+  return [this.starts[idx], this.lengths[idx]];
+};
+
+// var Graph = require('graphology');
+// var graph = new Graph();
+// graph.mergeEdge(1, 2);
+// graph.mergeEdge(2, 3);
+// graph.mergeEdge(2, 1);
+// graph.mergeEdge(4, 5);
+
+// var index = new OutboundNeighborhoodIndex(graph);
+// console.log(index);
+
+// graph.forEachNode(node => {
+//   var bounds = index.bounds(node);
+
+//   console.log(node, bounds);
+//   var A = index.neighborhood.array;
+//   var neighbors = A.slice(bounds[0], bounds[0] + bounds[1]);
+//   console.log(neighbors);
+// });
+
+function createIndexedBrandes(graph) {
+  var neighborhoodIndex = new OutboundNeighborhoodIndex(graph);
+  var N = neighborhoodIndex.neighborhood.array;
+
+  var sigma = {},
+      P = {};
+
+  // TODO: transform S in FixedStack
+  // TODO: more aggressive indexation relying on indices without objects
+
+  return function(source) {
+    source = '' + source;
+
+    var S = [];
+
+    var Dv,
+        sigmav,
+        bounds,
+        start,
+        length,
+        v,
+        w,
+        j,
+        m;
+
+    for (v in neighborhoodIndex.ids) {
+      P[v] = [];
+      sigma[v] = 0;
+    }
+
+    var D = {};
+
+    sigma[source] = 1;
+    D[source] = 0;
+
+    var queue = Queue.of(source);
+
+    while (queue.size) {
+      v = queue.dequeue();
+      S.push(v);
+
+      Dv = D[v];
+      sigmav = sigma[v];
+
+      bounds = neighborhoodIndex.bounds(v);
+      start = bounds[0];
+      length = bounds[1];
+
+      for (j = start, m = start + length; j < m; j++) {
+        w = neighborhoodIndex.nodes[N[j]];
+
+        if (!(w in D)) {
+          queue.enqueue(w);
+          D[w] = Dv + 1;
+        }
+
+        if (D[w] === Dv + 1) {
+          sigma[w] += sigmav;
+          P[w].push(v);
+        }
+      }
+    }
+
+    return [S, P, sigma];
+  };
+}
 
 /**
  * Exporting.
@@ -312,5 +408,6 @@ function brandes(graph, source) {
 shortestPath.bidirectional = bidirectional;
 shortestPath.singleSource = singleSource;
 shortestPath.brandes = brandes;
+shortestPath.createIndexedBrandes = createIndexedBrandes;
 
 module.exports = shortestPath;

@@ -225,38 +225,53 @@ describe('unweighted', function() {
       graph.mergeEdge(edge[0], edge[1]);
     });
 
+    var expected = [
+      ['1', '2', '8', '3', '4', '7', '9', '5', '6'],
+      {
+        '1': [],
+        '2': ['1'],
+        '3': ['2'],
+        '4': ['2'],
+        '5': ['4'],
+        '6': ['7'],
+        '7': ['8'],
+        '8': ['1'],
+        '9': ['8'],
+        '10': [],
+        '11': []
+      },
+      {
+        '1': 1,
+        '2': 1,
+        '3': 1,
+        '4': 1,
+        '5': 1,
+        '6': 1,
+        '7': 1,
+        '8': 1,
+        '9': 1,
+        '10': 0,
+        '11': 0
+      }
+    ];
+
     it('applying Ulrik Brandes\' method should work properly.', function() {
       var result = library.brandes(graph, 1);
 
-      assert.deepEqual(result, [
-        ['1', '2', '8', '3', '4', '7', '9', '5', '6'],
-        {
-          '1': [],
-          '2': ['1'],
-          '3': ['2'],
-          '4': ['2'],
-          '5': ['4'],
-          '6': ['7'],
-          '7': ['8'],
-          '8': ['1'],
-          '9': ['8'],
-          '10': [],
-          '11': []
-        },
-        {
-          '1': 1,
-          '2': 1,
-          '3': 1,
-          '4': 1,
-          '5': 1,
-          '6': 1,
-          '7': 1,
-          '8': 1,
-          '9': 1,
-          '10': 0,
-          '11': 0
-        }
-      ]);
+      assert.deepEqual(result, expected);
+    });
+
+    it('the indexed version should also work properly.', function() {
+      var indexedBrandes = library.createIndexedBrandes(graph);
+      var result = indexedBrandes(1);
+
+      assert.deepEqual(result, expected);
+
+      assert.doesNotThrow(function() {
+        graph.forEachNode(function(node) {
+          indexedBrandes(node);
+        });
+      });
     });
   });
 });
