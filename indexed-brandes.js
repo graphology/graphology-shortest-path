@@ -8,6 +8,7 @@
 var FixedDeque = require('mnemonist/fixed-deque'),
     FixedStack = require('mnemonist/fixed-stack'),
     Heap = require('mnemonist/heap'),
+    typed = require('mnemonist/utils/typed-arrays'),
     neighborhoodIndices = require('graphology-indices/neighborhood/outbound');
 
 var OutboundNeighborhoodIndex = neighborhoodIndices.OutboundNeighborhoodIndex,
@@ -32,7 +33,7 @@ exports.createUnweightedIndexedBrandes = function createUnweightedIndexedBrandes
 
   var order = graph.order;
 
-  var S = new FixedStack(Array, order),
+  var S = new FixedStack(typed.getPointerArray(order), order),
       sigma = new Uint32Array(order),
       P = new Array(order),
       D = new Int32Array(order);
@@ -133,7 +134,7 @@ exports.createDijkstraIndexedBrandes = function createDijkstraIndexedBrandes(gra
 
   var order = graph.order;
 
-  var S = new FixedStack(Array, order),
+  var S = new FixedStack(typed.getPointerArray(order), order),
       sigma = new Uint32Array(order),
       P = new Array(order),
       D = new Int32Array(order),

@@ -115,7 +115,7 @@ describe('dijkstra', function() {
 
       var result = indexedBrandes(nodeToIndex[1]);
       console.log(result);
-      var S = result[0].toArray().reverse().map(function(index) {
+      var S = Array.from(result[0].toArray()).reverse().map(function(index) {
         return indexToNode[index];
       });
 
