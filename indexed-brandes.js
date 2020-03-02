@@ -11,6 +11,16 @@ var FixedDeque = require('mnemonist/fixed-deque'),
 
 var OutboundNeighborhoodIndex = neighborhoodIndices.OutboundNeighborhoodIndex;
 
+/**
+ * Indexed unweighted Brandes routine.
+ *
+ * [Reference]:
+ * Ulrik Brandes: A Faster Algorithm for Betweenness Centrality.
+ * Journal of Mathematical Sociology 25(2):163-177, 2001.
+ *
+ * @param  {Graph}    graph - The graphology instance.
+ * @return {function}
+ */
 exports.createUnweightedIndexedBrandes = function createUnweightedIndexedBrandes(graph) {
   var neighborhoodIndex = new OutboundNeighborhoodIndex(graph);
 
