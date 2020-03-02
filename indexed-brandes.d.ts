@@ -1,5 +1,6 @@
 import Graph from 'graphology-types';
 import FixedStack from 'mnemonist/fixed-stack';
+import {OutboundNeighborhoodIndex, WeightedOutboundNeighborhoodIndex} from 'graphology-indices/neighborhood/outbound';
 
 type IndexedBrandesResult = [
   FixedStack<number>,
@@ -9,4 +10,20 @@ type IndexedBrandesResult = [
 
 type IndexedBrandesFunction = (sourceIndex: number) => IndexedBrandesResult;
 
-export function createUnweightedIndexedBrandes(graph: Graph): IndexedBrandesFunction;
+interface ICreateUnweightedIndexedBrandes {
+  (graph: Graph): IndexedBrandesFunction;
+  index: OutboundNeighborhoodIndex;
+}
+
+interface ICreateDijkstraIndexedBrandes {
+  (graph: Graph, weightAttribute?: string): IndexedBrandesFunction;
+  index: WeightedOutboundNeighborhoodIndex;
+}
+
+declare const createUnweightedIndexedBrandes: ICreateUnweightedIndexedBrandes;
+declare const createDijkstraIndexedBrandes: ICreateDijkstraIndexedBrandes;
+
+export {
+  createUnweightedIndexedBrandes,
+  createDijkstraIndexedBrandes
+};

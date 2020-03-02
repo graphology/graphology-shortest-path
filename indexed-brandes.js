@@ -40,7 +40,7 @@ exports.createUnweightedIndexedBrandes = function createUnweightedIndexedBrandes
 
   var Q = new FixedDeque(Uint32Array, order);
 
-  return function(sourceIndex) {
+  var brandes = function(sourceIndex) {
     var Dv,
         sigmav,
         start,
@@ -87,6 +87,10 @@ exports.createUnweightedIndexedBrandes = function createUnweightedIndexedBrandes
 
     return [S, P, sigma];
   };
+
+  brandes.index = neighborhoodIndex;
+
+  return brandes;
 };
 
 function BRANDES_DIJKSTRA_HEAP_COMPARATOR(a, b) {
@@ -143,7 +147,7 @@ exports.createDijkstraIndexedBrandes = function createDijkstraIndexedBrandes(gra
   // TODO: use fixed-size heap
   var Q = new Heap(BRANDES_DIJKSTRA_HEAP_COMPARATOR);
 
-  return function(sourceIndex) {
+  var brandes = function(sourceIndex) {
     var start,
         stop,
         item,
@@ -203,4 +207,8 @@ exports.createDijkstraIndexedBrandes = function createDijkstraIndexedBrandes(gra
 
     return [S, P, sigma];
   };
+
+  brandes.index = neighborhoodIndex;
+
+  return brandes;
 };
