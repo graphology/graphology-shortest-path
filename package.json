@@ -44,7 +44,8 @@
     "extends": "@yomguithereal/eslint-config",
     "globals": {
       "Uint32Array": true,
-      "Int32Array": true
+      "Int32Array": true,
+      "Float64Array": true
     }
   },
   "dependencies": {

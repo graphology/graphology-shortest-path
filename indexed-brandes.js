@@ -7,9 +7,11 @@
  */
 var FixedDeque = require('mnemonist/fixed-deque'),
     FixedStack = require('mnemonist/fixed-stack'),
+    Heap = require('mnemonist/heap'),
     neighborhoodIndices = require('graphology-indices/neighborhood/outbound');
 
-var OutboundNeighborhoodIndex = neighborhoodIndices.OutboundNeighborhoodIndex;
+var OutboundNeighborhoodIndex = neighborhoodIndices.OutboundNeighborhoodIndex,
+    WeightedOutboundNeighborhoodIndex = neighborhoodIndices.WeightedOutboundNeighborhoodIndex;
 
 /**
  * Indexed unweighted Brandes routine.
@@ -77,6 +79,122 @@ exports.createUnweightedIndexedBrandes = function createUnweightedIndexedBrandes
 
         if (D[w] === Dv + 1) {
           sigma[w] += sigmav;
+          P[w].push(v);
+        }
+      }
+    }
+
+    return [S, P, sigma];
+  };
+};
+
+function BRANDES_DIJKSTRA_HEAP_COMPARATOR(a, b) {
+  if (a[0] > b[0])
+    return 1;
+  if (a[0] < b[0])
+    return -1;
+
+  if (a[1] > b[1])
+    return 1;
+  if (a[1] < b[1])
+    return -1;
+
+  if (a[2] > b[2])
+    return 1;
+  if (a[2] < b[2])
+    return -1;
+
+  if (a[3] > b[3])
+    return 1;
+  if (a[3] < b[3])
+    return - 1;
+
+  return 0;
+}
+
+/**
+ * Indexed Dijkstra Brandes routine.
+ *
+ * [Reference]:
+ * Ulrik Brandes: A Faster Algorithm for Betweenness Centrality.
+ * Journal of Mathematical Sociology 25(2):163-177, 2001.
+ *
+ * @param  {Graph}    graph           - The graphology instance.
+ * @param  {string}   weightAttribute - Name of the weight attribute.
+ * @return {function}
+ */
+exports.createDijkstraIndexedBrandes = function createDijkstraIndexedBrandes(graph, weightAttribute) {
+  var neighborhoodIndex = new WeightedOutboundNeighborhoodIndex(graph, weightAttribute);
+
+  var neighborhood = neighborhoodIndex.neighborhood,
+      weights = neighborhood.weights,
+      starts = neighborhoodIndex.starts,
+      stops = neighborhoodIndex.stops;
+
+  var order = graph.order;
+
+  var S = new FixedStack(Array, order),
+      sigma = new Uint32Array(order),
+      P = new Array(order),
+      D = new Int32Array(order),
+      seen = new Float64Array(order);
+
+  var Q = new Heap(BRANDES_DIJKSTRA_HEAP_COMPARATOR);
+
+  return function(sourceIndex) {
+    var start,
+        stop,
+        item,
+        dist,
+        pred,
+        cost,
+        j,
+        v,
+        w;
+
+    var count = 0;
+
+    for (v = 0; v < order; v++) {
+      P[v] = [];
+      sigma[v] = 0;
+      D[v] = -1;
+      seen[v] = -1;
+    }
+
+    sigma[sourceIndex] = 1;
+    D[sourceIndex] = 0;
+    seen[sourceIndex] = 0;
+
+    Q.push([0, count++, sourceIndex, sourceIndex]);
+
+    while (Q.size !== 0) {
+      item = Q.pop();
+      dist = item[0];
+      pred = item[2];
+      v = item[3];
+
+      if (D[v] !== -1)
+        continue;
+
+      S.push(v);
+      D[v] = dist;
+      sigma[v] += sigma[pred];
+
+      start = starts[v];
+      stop = stops[v];
+
+      for (j = start; j < stop; j++) {
+        w = neighborhood[j];
+        cost = dist + weights[j];
+
+        if (D[w] === -1 && (seen[w] === -1 || cost < seen[w])) {
+          seen[w] = cost;
+          Q.push([cost, count++, v, w]);
+          sigma[w] = 0;
+          P[w] = [v];
+        }
+        else if (cost === seen[w]) {
+          sigma[w] += sigma[v];
           P[w].push(v);
         }
       }
