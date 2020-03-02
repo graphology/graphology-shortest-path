@@ -4,6 +4,7 @@
  */
 var assert = require('assert'),
     library = require('../unweighted.js'),
+    indexLibrary = require('../indexed-brandes.js'),
     graphology = require('graphology');
 
 var Graph = graphology.Graph,
@@ -225,6 +226,14 @@ describe('unweighted', function() {
       graph.mergeEdge(edge[0], edge[1]);
     });
 
+    var nodeToIndex = {},
+        indexToNode = graph.nodes(),
+        i = 0;
+
+    graph.forEachNode(function(node) {
+      nodeToIndex[node] = i++;
+    });
+
     var expected = [
       ['1', '2', '8', '3', '4', '7', '9', '5', '6'],
       {
@@ -262,13 +271,32 @@ describe('unweighted', function() {
     });
 
     it('the indexed version should also work properly.', function() {
-      var indexedBrandes = library.createIndexedBrandes(graph);
-      var result = indexedBrandes(1);
-      var S = result[0].toArray().reverse();
-      result[0].clear();
-      result[0] = S;
+      var indexedBrandes = indexLibrary.createUnweightedIndexedBrandes(graph);
 
-      assert.deepEqual(result, expected);
+      var result = indexedBrandes(nodeToIndex[1]);
+      var S = result[0].toArray().reverse().map(function(index) {
+        return indexToNode[index];
+      });
+
+      result[0].clear();
+
+      var P = {};
+
+      result[1].forEach(function(s, i) {
+        P[indexToNode[i]] = s.map(function(index) {
+          return indexToNode[index];
+        })
+      });
+
+      var sigma = {};
+
+      result[2].forEach(function(s, i) {
+        sigma[indexToNode[i]] = s;
+      });
+
+      assert.deepEqual(S, expected[0]);
+      assert.deepEqual(P, expected[1]);
+      assert.deepEqual(sigma, expected[2]);
 
       assert.doesNotThrow(function() {
         graph.forEachNode(function(node) {

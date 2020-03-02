@@ -41,7 +41,11 @@
     "mocha": "^7.1.0"
   },
   "eslintConfig": {
-    "extends": "@yomguithereal/eslint-config"
+    "extends": "@yomguithereal/eslint-config",
+    "globals": {
+      "Uint32Array": true,
+      "Int32Array": true
+    }
   },
   "dependencies": {
     "graphology-indices": "^0.2.0",
