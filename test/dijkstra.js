@@ -4,6 +4,7 @@
  */
 var assert = require('assert'),
     library = require('../dijkstra.js'),
+    indexLibrary = require('../indexed-brandes.js'),
     graphology = require('graphology');
 
 var UndirectedGraph = graphology.UndirectedGraph;
@@ -65,38 +66,85 @@ describe('dijkstra', function() {
   });
 
   describe('brandes', function() {
+    var nodeToIndex = {},
+        indexToNode = graph.nodes(),
+        i = 0;
+
+    graph.forEachNode(function(node) {
+      nodeToIndex[node] = i++;
+    });
+
+    var expected = [
+      ['1', '2', '8', '3', '4', '5', '7', '6', '9'],
+      {
+        '1': [],
+        '2': ['1'],
+        '3': ['2'],
+        '4': ['2'],
+        '5': ['4'],
+        '6': ['5'],
+        '7': ['8'],
+        '8': ['1'],
+        '9': ['7'],
+        '10': [],
+        '11': []
+      },
+      {
+        '1': 2,
+        '2': 2,
+        '3': 2,
+        '4': 2,
+        '5': 2,
+        '6': 2,
+        '7': 2,
+        '8': 2,
+        '9': 2,
+        '10': 0,
+        '11': 0
+      }
+    ];
+
     it('applying Ulrik Brandes\' method should work properly.', function() {
       var result = library.brandes(graph, '1');
 
-      assert.deepEqual(result, [
-        ['1', '2', '8', '3', '4', '5', '7', '6', '9'],
-        {
-          '1': [],
-          '2': ['1'],
-          '3': ['2'],
-          '4': ['2'],
-          '5': ['4'],
-          '6': ['5'],
-          '7': ['8'],
-          '8': ['1'],
-          '9': ['7'],
-          '10': [],
-          '11': []
-        },
-        {
-          '1': 2,
-          '2': 2,
-          '3': 2,
-          '4': 2,
-          '5': 2,
-          '6': 2,
-          '7': 2,
-          '8': 2,
-          '9': 2,
-          '10': 0,
-          '11': 0
-        }
-      ]);
+      assert.deepEqual(result, expected);
+    });
+
+    it.skip('the indexed version should also work properly.', function() {
+      var indexedBrandes = indexLibrary.createDijkstraIndexedBrandes(graph);
+
+      var result = indexedBrandes(nodeToIndex[1]);
+      console.log(result);
+      var S = result[0].toArray().reverse().map(function(index) {
+        return indexToNode[index];
+      });
+
+      result[0].clear();
+
+      var P = {};
+
+      result[1].forEach(function(s, i) {
+        P[indexToNode[i]] = s.map(function(index) {
+          return indexToNode[index];
+        })
+      });
+
+      var sigma = {};
+
+      result[2].forEach(function(s, i) {
+        sigma[indexToNode[i]] = s;
+      });
+
+      assert.deepEqual(S, expected[0]);
+      assert.deepEqual(P, expected[1]);
+      assert.deepEqual(sigma, expected[2]);
+
+      assert.doesNotThrow(function() {
+        graph.forEachNode(function(node) {
+          result = indexedBrandes(node);
+          result[0].clear();
+        });
+      });
     });
   });
 });

@@ -274,6 +274,7 @@ describe('unweighted', function() {
       var indexedBrandes = indexLibrary.createUnweightedIndexedBrandes(graph);
 
       var result = indexedBrandes(nodeToIndex[1]);
+
       var S = result[0].toArray().reverse().map(function(index) {
         return indexToNode[index];
       });
