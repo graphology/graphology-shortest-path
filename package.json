@@ -7,6 +7,7 @@
     "*.d.ts",
     "dijkstra.js",
     "index.js",
+    "indexed-brandes.js",
     "unweighted.js"
   ],
   "scripts": {
