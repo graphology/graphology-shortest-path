@@ -110,11 +110,11 @@ describe('dijkstra', function() {
       assert.deepEqual(result, expected);
     });
 
-    it.skip('the indexed version should also work properly.', function() {
+    it('the indexed version should also work properly.', function() {
       var indexedBrandes = indexLibrary.createDijkstraIndexedBrandes(graph);
 
       var result = indexedBrandes(nodeToIndex[1]);
-      console.log(result);
+
       var S = Array.from(result[0].toArray()).reverse().map(function(index) {
         return indexToNode[index];
       });

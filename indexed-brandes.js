@@ -128,7 +128,7 @@ exports.createDijkstraIndexedBrandes = function createDijkstraIndexedBrandes(gra
   var neighborhoodIndex = new WeightedOutboundNeighborhoodIndex(graph, weightAttribute);
 
   var neighborhood = neighborhoodIndex.neighborhood,
-      weights = neighborhood.weights,
+      weights = neighborhoodIndex.weights,
       starts = neighborhoodIndex.starts,
       stops = neighborhoodIndex.stops;
 
@@ -137,9 +137,10 @@ exports.createDijkstraIndexedBrandes = function createDijkstraIndexedBrandes(gra
   var S = new FixedStack(typed.getPointerArray(order), order),
       sigma = new Uint32Array(order),
       P = new Array(order),
-      D = new Int32Array(order),
+      D = new Float64Array(order),
       seen = new Float64Array(order);
 
+  // TODO: use fixed-size heap
   var Q = new Heap(BRANDES_DIJKSTRA_HEAP_COMPARATOR);
 
   return function(sourceIndex) {
@@ -163,7 +164,6 @@ exports.createDijkstraIndexedBrandes = function createDijkstraIndexedBrandes(gra
     }
 
     sigma[sourceIndex] = 1;
-    D[sourceIndex] = 0;
     seen[sourceIndex] = 0;
 
     Q.push([0, count++, sourceIndex, sourceIndex]);
