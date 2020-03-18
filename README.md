@@ -17,6 +17,7 @@ npm install graphology-shortest-path
   - [bidirectional](#bidirectional)
   - [singleSource](#singlesource)
   - [singleSourceLength](#singlesourcelength)
+  - [undirectedSingleSourceLength](#undirectedsinglesourcelength)
   - [brandes](#brandes)
 * [Dijkstra](#dijkstra)
   - [bidirectional](#dijkstra-bidirectional)
@@ -97,6 +98,24 @@ import {singleSourceLength} from 'graphology-shortest-path/unweighted';
 
 // Returning every shortest path between source & every node of the graph
 const paths = singleSourceLength(graph, source);
+```
+
+*Arguments*
+
+* **graph** *Graph*: a `graphology` instance.
+* **source** *any*: source node.
+
+### undirectedSingleSourceLength
+
+Return a map of every shortest path length between the given source & all the nodes of the graph. This is basically the same as [singleSourceLength](#singlesourcelength) except that it will consider any given graph as undirected when traversing.
+
+```js
+import {undirectedSingleSourceLength} from 'graphology-shortest-path';
+// Alternatively, if you want to load only the relevant code
+import {undirectedSingleSourceLength} from 'graphology-shortest-path/unweighted';
+
+// Returning every shortest path between source & every node of the graph
+const paths = undirectedSingleSourceLength(graph, source);
 ```
 
 *Arguments*

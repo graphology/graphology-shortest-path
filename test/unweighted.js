@@ -234,13 +234,34 @@ describe('unweighted', function() {
     it('should take directedness into account.', function() {
       var graph = new DirectedGraph();
       mergePath(graph, [1, 2, 3, 4]);
-      graph.mergeEdge(1, 2);
-      graph.mergeEdge(2, 3);
-      graph.mergeEdge(3, 4);
 
       var lengths = library.singleSourceLength(graph, 4);
 
       assert.deepEqual(lengths, {
+        4: 0
+      });
+
+      graph.addEdge(4, 2);
+
+      lengths = library.singleSourceLength(graph, 4);
+
+      assert.deepEqual(lengths, {
+        4: 0,
+        2: 1,
+        3: 2
+      });
+    });
+
+    it('should be possible to use an undirected variant.', function() {
+      var graph = new DirectedGraph();
+      mergePath(graph, [1, 2, 3, 4]);
+
+      var lengths = library.undirectedSingleSourceLength(graph, 4);
+
+      assert.deepEqual(lengths, {
+        1: 3,
+        2: 2,
+        3: 1,
         4: 0
       });
 

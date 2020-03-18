@@ -197,13 +197,14 @@ function singleSource(graph, source) {
  * Function attempting to find the shortest path lengths in the graph between
  * the given source node & all the other nodes.
  *
+ * @param  {string} method - Neighbor collection method name.
  * @param  {Graph}  graph  - Target graph.
  * @param  {any}    source - Source node.
  * @return {object}        - The map of found path lengths.
  */
 
 // TODO: cutoff option
-function singleSourceLength(graph, source) {
+function asbtractSingleSourceLength(method, graph, source) {
   if (!isGraph(graph))
     throw new Error('graphology-shortest-path: invalid graphology instance.');
 
@@ -234,7 +235,7 @@ function singleSourceLength(graph, source) {
         continue;
 
       seen.add(node);
-      extend(nextLevel, graph.outboundNeighbors(node));
+      extend(nextLevel, graph[method](node));
 
       lengths[node] = level;
     }
@@ -245,6 +246,9 @@ function singleSourceLength(graph, source) {
 
   return lengths;
 }
+
+var singleSourceLength = asbtractSingleSourceLength.bind(null, 'outboundNeighbors');
+var undirectedSingleSourceLength = asbtractSingleSourceLength.bind(null, 'neighbors');
 
 /**
  * Main polymorphic function taking either only a source or a
@@ -338,6 +342,7 @@ function brandes(graph, source) {
 shortestPath.bidirectional = bidirectional;
 shortestPath.singleSource = singleSource;
 shortestPath.singleSourceLength = singleSourceLength;
+shortestPath.undirectedSingleSourceLength = undirectedSingleSourceLength;
 shortestPath.brandes = brandes;
 
 module.exports = shortestPath;
