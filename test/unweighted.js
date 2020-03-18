@@ -5,7 +5,8 @@
 var assert = require('assert'),
     library = require('../unweighted.js'),
     indexLibrary = require('../indexed-brandes.js'),
-    graphology = require('graphology');
+    graphology = require('graphology'),
+    mergePath = require('graphology-utils/merge-path');
 
 var Graph = graphology.Graph,
     DirectedGraph = graphology.DirectedGraph,
@@ -160,9 +161,7 @@ describe('unweighted', function() {
 
     it('should properly return the paths.', function() {
       var graph = new Graph();
-      graph.mergeEdge(1, 2);
-      graph.mergeEdge(2, 3);
-      graph.mergeEdge(3, 4);
+      mergePath(graph, [1, 2, 3, 4]);
 
       var paths = library.singleSource(graph, 1);
 
@@ -194,6 +193,65 @@ describe('unweighted', function() {
         4: ['4'],
         2: ['4', '2'],
         3: ['4', '2', '3']
+      });
+    });
+  });
+
+  describe('singleSourceLength', function() {
+    it('should throw if given invalid arguments', function() {
+      assert.throws(function() {
+        library.singleSourceLength(null);
+      }, /graphology/);
+
+      assert.throws(function() {
+        library.singleSourceLength(new Graph(), 'test');
+      }, /source/);
+    });
+
+    it('should return the correct path lengths.', function() {
+      var graph = new Graph();
+      mergePath(graph, [1, 2, 3, 4]);
+
+      var lengths = library.singleSourceLength(graph, 1);
+
+      assert.deepEqual(lengths, {1: 0, 2: 1, 3: 2, 4: 3});
+    });
+
+    it('should work even with multiple components.', function() {
+      var graph = new Graph({type: 'undirected'});
+      mergePath(graph, [1, 2, 3]);
+      mergePath(graph, [4, 5, 6]);
+
+      var lengths = library.singleSourceLength(graph, 2);
+
+      assert.deepEqual(lengths, {1: 1, 2: 0, 3: 1});
+
+      lengths = library.singleSourceLength(graph, 4);
+
+      assert.deepEqual(lengths, {4: 0, 5: 1, 6: 2});
+    });
+
+    it('should take directedness into account.', function() {
+      var graph = new DirectedGraph();
+      mergePath(graph, [1, 2, 3, 4]);
+      graph.mergeEdge(1, 2);
+      graph.mergeEdge(2, 3);
+      graph.mergeEdge(3, 4);
+
+      var lengths = library.singleSourceLength(graph, 4);
+
+      assert.deepEqual(lengths, {
+        4: 0
+      });
+
+      graph.addEdge(4, 2);
+
+      lengths = library.singleSourceLength(graph, 4);
+
+      assert.deepEqual(lengths, {
+        4: 0,
+        2: 1,
+        3: 2
       });
     });
   });

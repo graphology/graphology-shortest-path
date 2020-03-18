@@ -44,12 +44,14 @@
   "eslintConfig": {
     "extends": "@yomguithereal/eslint-config",
     "globals": {
+      "Set": true,
       "Uint32Array": true,
       "Int32Array": true,
       "Float64Array": true
     }
   },
   "dependencies": {
+    "@yomguithereal/helpers": "^1.0.0",
     "graphology-indices": "^0.2.1",
     "graphology-types": "^0.16.0",
     "graphology-utils": "^1.7.0",

@@ -6,7 +6,8 @@
  * whose edges are not weighted.
  */
 var isGraph = require('graphology-utils/is-graph'),
-    Queue = require('mnemonist/queue');
+    Queue = require('mnemonist/queue'),
+    extend = require('@yomguithereal/helpers/extend');
 
 /**
  * Function attempting to find the shortest path in a graph between
@@ -193,6 +194,59 @@ function singleSource(graph, source) {
 }
 
 /**
+ * Function attempting to find the shortest path lengths in the graph between
+ * the given source node & all the other nodes.
+ *
+ * @param  {Graph}  graph  - Target graph.
+ * @param  {any}    source - Source node.
+ * @return {object}        - The map of found path lengths.
+ */
+
+// TODO: cutoff option
+function singleSourceLength(graph, source) {
+  if (!isGraph(graph))
+    throw new Error('graphology-shortest-path: invalid graphology instance.');
+
+  if (!graph.hasNode(source))
+    throw new Error('graphology-shortest-path: the "' + source + '" source node does not exist in the given graph.');
+
+  source = '' + source;
+
+  // Performing BFS to count shortest paths
+  var seen = new Set();
+
+  var lengths = {},
+      level = 0;
+
+  lengths[source] = 0;
+
+  var currentLevel = [source];
+
+  var i, l, node;
+
+  while (currentLevel.length !== 0) {
+    var nextLevel = [];
+
+    for (i = 0, l = currentLevel.length; i < l; i++) {
+      node = currentLevel[i];
+
+      if (seen.has(node))
+        continue;
+
+      seen.add(node);
+      extend(nextLevel, graph.outboundNeighbors(node));
+
+      lengths[node] = level;
+    }
+
+    level++;
+    currentLevel = nextLevel;
+  }
+
+  return lengths;
+}
+
+/**
  * Main polymorphic function taking either only a source or a
  * source/target combo.
  *
@@ -283,6 +337,7 @@ function brandes(graph, source) {
  */
 shortestPath.bidirectional = bidirectional;
 shortestPath.singleSource = singleSource;
+shortestPath.singleSourceLength = singleSourceLength;
 shortestPath.brandes = brandes;
 
 module.exports = shortestPath;

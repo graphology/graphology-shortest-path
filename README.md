@@ -16,6 +16,7 @@ npm install graphology-shortest-path
   - [shortestPath](#shortestpath)
   - [bidirectional](#bidirectional)
   - [singleSource](#singlesource)
+  - [singleSourceLength](#singlesourcelength)
   - [brandes](#brandes)
 * [Dijkstra](#dijkstra)
   - [bidirectional](#dijkstra-bidirectional)
@@ -85,6 +86,24 @@ const paths = singleSource(graph, source);
 * **graph** *Graph*: a `graphology` instance.
 * **source** *any*: source node.
 
+### singleSourceLength
+
+Return a map of every shortest path length between the given source & all the nodes of the graph.
+
+```js
+import {singleSourceLength} from 'graphology-shortest-path';
+// Alternatively, if you want to load only the relevant code
+import {singleSourceLength} from 'graphology-shortest-path/unweighted';
+
+// Returning every shortest path between source & every node of the graph
+const paths = singleSourceLength(graph, source);
+```
+
+*Arguments*
+
+* **graph** *Graph*: a `graphology` instance.
+* **source** *any*: source node.
+
 ### brandes
 
 Apply Ulrik Brandes' method to collect single source shortest paths from the given node. This is mostly used to compute betweenness centrality.
@@ -105,7 +124,7 @@ const [S, P, sigma] = brandes(graph, source);
 
 ## Dijkstra
 
-<h3 id="dijkstra-bidirectional">bidirectional</h3> 
+<h3 id="dijkstra-bidirectional">bidirectional</h3>
 
 Returns the shortest path in the weighted graph between source & target or `null` if such a path does not exist.
 
@@ -126,9 +145,9 @@ const paths = dijkstra.bidirectional(graph, source, target, 'customWeight');
 * **graph** *Graph*: a `graphology` instance.
 * **source** *any*: source node.
 * **target** *any*: target node.
-* **weightAttribute** *?string* [`weight`]: name of the weight attribute. 
+* **weightAttribute** *?string* [`weight`]: name of the weight attribute.
 
-<h3 id="dijkstra-singlesource">singleSource</h3> 
+<h3 id="dijkstra-singlesource">singleSource</h3>
 
 Return a map of every shortest path between the given source & all the nodes of the weighted graph.
 
@@ -150,7 +169,7 @@ const paths = dijkstra.singleSource(graph, source, 'customWeight');
 * **source** *any*: source node.
 * **weightAttribute** *?string* [`weight`]: name of the weight attribute.
 
-<h3 id="dijkstra-brandes">brandes</h3> 
+<h3 id="dijkstra-brandes">brandes</h3>
 
 Apply Ulrik Brandes' method to collect single source shortest paths from the given node. This is mostly used to compute betweenness centrality.
 
