@@ -28,8 +28,7 @@ exports.createUnweightedIndexedBrandes = function createUnweightedIndexedBrandes
   var neighborhoodIndex = new OutboundNeighborhoodIndex(graph);
 
   var neighborhood = neighborhoodIndex.neighborhood,
-      starts = neighborhoodIndex.starts,
-      stops = neighborhoodIndex.stops;
+      starts = neighborhoodIndex.starts;
 
   var order = graph.order;
 
@@ -68,7 +67,7 @@ exports.createUnweightedIndexedBrandes = function createUnweightedIndexedBrandes
       sigmav = sigma[v];
 
       start = starts[v];
-      stop = stops[v];
+      stop = starts[v + 1];
 
       for (j = start; j < stop; j++) {
         w = neighborhood[j];
@@ -133,8 +132,7 @@ exports.createDijkstraIndexedBrandes = function createDijkstraIndexedBrandes(gra
 
   var neighborhood = neighborhoodIndex.neighborhood,
       weights = neighborhoodIndex.weights,
-      starts = neighborhoodIndex.starts,
-      stops = neighborhoodIndex.stops;
+      starts = neighborhoodIndex.starts;
 
   var order = graph.order;
 
@@ -186,7 +184,7 @@ exports.createDijkstraIndexedBrandes = function createDijkstraIndexedBrandes(gra
       sigma[v] += sigma[pred];
 
       start = starts[v];
-      stop = stops[v];
+      stop = starts[v + 1];
 
       for (j = start; j < stop; j++) {
         w = neighborhood[j];
