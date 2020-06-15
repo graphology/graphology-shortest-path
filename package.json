@@ -37,9 +37,9 @@
   "homepage": "https://github.com/graphology/graphology-shortest-path#readme",
   "devDependencies": {
     "@yomguithereal/eslint-config": "^4.0.0",
-    "eslint": "^6.8.0",
-    "graphology": "0.16.1",
-    "mocha": "^7.1.0"
+    "eslint": "^7.2.0",
+    "graphology": "0.17.1",
+    "mocha": "^8.0.1"
   },
   "eslintConfig": {
     "extends": "@yomguithereal/eslint-config",
@@ -51,10 +51,10 @@
     }
   },
   "dependencies": {
-    "@yomguithereal/helpers": "^1.0.0",
-    "graphology-indices": "^0.3.0",
+    "@yomguithereal/helpers": "^1.0.1",
+    "graphology-indices": "^0.8.0",
     "graphology-types": "^0.16.0",
     "graphology-utils": "^1.7.0",
-    "mnemonist": "^0.33.1"
+    "mnemonist": "^0.36.1"
   }
 }
