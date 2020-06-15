@@ -7,7 +7,8 @@ var assert = require('assert'),
     indexLibrary = require('../indexed-brandes.js'),
     graphology = require('graphology');
 
-var UndirectedGraph = graphology.UndirectedGraph;
+var UndirectedGraph = graphology.UndirectedGraph,
+    DirectedGraph = graphology.DirectedGraph;
 
 var EDGES = [
   [1, 2, 1],
@@ -44,6 +45,18 @@ describe('dijkstra', function() {
       path = library.bidirectional(graph, 1, 11);
 
       assert.strictEqual(path, null);
+    });
+
+    it('should work when weight is omitted.', function() {
+      var otherGraph = new DirectedGraph();
+
+      otherGraph.mergeEdge(1, 2, {weight: 3});
+      otherGraph.mergeEdge(1, 3);
+      otherGraph.mergeEdge(3, 2);
+
+      var path = library.bidirectional(otherGraph, 1, 2);
+
+      assert.deepEqual(path, ['1', '3', '2']);
     });
   });
 

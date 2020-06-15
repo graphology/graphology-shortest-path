@@ -84,8 +84,13 @@ function abstractBidirectionalDijkstra(graph, source, target, weightAttribute) {
 
   weightAttribute = weightAttribute || DEFAULTS.weightAttribute;
 
-  var getWeight = function(e) {
-    return graph.getEdgeAttribute(e, weightAttribute);
+  var getWeight = function(edge) {
+    var weight = graph.getEdgeAttribute(edge, weightAttribute);
+
+    if (typeof weight !== 'number' || isNaN(weight))
+      return 1;
+
+    return weight;
   };
 
   if (source === target)
@@ -206,7 +211,12 @@ function abstractDijkstraMultisource(
 
   // Building necessary functions
   var getWeight = function(edge) {
-    return graph.getEdgeAttribute(edge, weightAttribute);
+    var weight = graph.getEdgeAttribute(edge, weightAttribute);
+
+    if (typeof weight !== 'number' || isNaN(weight))
+      return 1;
+
+    return weight;
   };
 
   var distances = {},
