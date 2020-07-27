@@ -37,7 +37,7 @@
   "homepage": "https://github.com/graphology/graphology-shortest-path#readme",
   "devDependencies": {
     "@yomguithereal/eslint-config": "^4.0.0",
-    "eslint": "^7.2.0",
+    "eslint": "^7.5.0",
     "graphology": "0.17.1",
     "mocha": "^8.0.1"
   },
@@ -55,6 +55,6 @@
     "graphology-indices": "^0.8.0",
     "graphology-types": "^0.16.0",
     "graphology-utils": "^1.7.0",
-    "mnemonist": "^0.36.1"
+    "mnemonist": "^0.38.0"
   }
 }
