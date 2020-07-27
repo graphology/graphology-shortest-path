@@ -58,6 +58,21 @@ describe('dijkstra', function() {
 
       assert.deepEqual(path, ['1', '3', '2']);
     });
+
+    it('should work with 0 weights.', function() {
+      var otherGraph = new DirectedGraph();
+      otherGraph.addNode('A');
+      otherGraph.addNode('B');
+      otherGraph.addNode('C');
+
+      otherGraph.addEdge('A', 'B', { weight: 0 });
+      otherGraph.addEdge('A', 'C', { weight: 0 });
+      otherGraph.addEdge('B', 'C', { weight: 1 });
+
+      var path = library.bidirectional(otherGraph, 'A', 'C');
+
+      assert.deepEqual(path, ['A', 'C']);
+    });
   });
 
   describe('singleSource', function() {

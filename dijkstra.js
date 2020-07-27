@@ -107,7 +107,7 @@ function abstractBidirectionalDijkstra(graph, source, target, weightAttribute) {
   seen[0][source] = 0;
   seen[1][target] = 0;
 
-  var finalPath,
+  var finalPath = [],
       finalDistance = Infinity;
 
   var count = 0,
@@ -163,7 +163,7 @@ function abstractBidirectionalDijkstra(graph, source, target, weightAttribute) {
         if (u in seen[0] && u in seen[1]) {
           d = seen[0][u] + seen[1][u];
 
-          if (!finalDistance || finalDistance > d) {
+          if (finalPath.length === 0 || finalDistance > d) {
             finalDistance = d;
             finalPath = paths[0][u].concat(paths[1][u].slice(0, -1).reverse());
           }
