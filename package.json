@@ -1,6 +1,6 @@
 {
   "name": "graphology-shortest-path",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Shortest path functions for graphology.",
   "main": "index.js",
   "types": "index.d.ts",
