@@ -58,7 +58,7 @@ describe('unweighted', function() {
 
       var path = library.bidirectional(graph, 1, 4);
 
-      assert.deepEqual(path, [1, 2, 3, 4]);
+      assert.deepStrictEqual(path, ['1', '2', '3', '4']);
     });
 
     it('should return `null` when no path is found.', function() {
@@ -80,7 +80,7 @@ describe('unweighted', function() {
 
       var path = library.bidirectional(graph, 1, 4);
 
-      assert.deepEqual(path, [1, 2, 3, 4]);
+      assert.deepStrictEqual(path, ['1', '2', '3', '4']);
 
       path = library.bidirectional(graph, 4, 1);
 
@@ -96,7 +96,7 @@ describe('unweighted', function() {
 
       var path = library.bidirectional(graph, 0, 2)
 
-      assert.deepEqual(path, ['0', '1', '2'])
+      assert.deepStrictEqual(path, ['0', '1', '2'])
     });
 
     it('should handle undirected cycles.', function() {
@@ -106,7 +106,7 @@ describe('unweighted', function() {
 
       var path = library.bidirectional(graph, 0, 1);
 
-      assert.deepEqual(path, ['0', '1']);
+      assert.deepStrictEqual(path, ['0', '1']);
     });
 
     it('Issue #4.1', function() {
@@ -123,7 +123,7 @@ describe('unweighted', function() {
 
       var path = library.bidirectional(graph, 0, 3);
 
-      assert.deepEqual(path, ['0', '2', '3']);
+      assert.deepStrictEqual(path, ['0', '2', '3']);
     });
 
     it('Issue #4.2', function() {
@@ -161,11 +161,11 @@ describe('unweighted', function() {
 
     it('should properly return the paths.', function() {
       var graph = new Graph();
-      mergePath(graph, [1, 2, 3, 4]);
+      mergePath(graph, ['1', '2', '3', '4']);
 
       var paths = library.singleSource(graph, 1);
 
-      assert.deepEqual(paths, {
+      assert.deepStrictEqual(paths, {
         1: ['1'],
         2: ['1', '2'],
         3: ['1', '2', '3'],
@@ -181,7 +181,7 @@ describe('unweighted', function() {
 
       var paths = library.singleSource(graph, 4);
 
-      assert.deepEqual(paths, {
+      assert.deepStrictEqual(paths, {
         4: ['4']
       });
 
@@ -189,7 +189,7 @@ describe('unweighted', function() {
 
       paths = library.singleSource(graph, 4);
 
-      assert.deepEqual(paths, {
+      assert.deepStrictEqual(paths, {
         4: ['4'],
         2: ['4', '2'],
         3: ['4', '2', '3']
@@ -210,11 +210,11 @@ describe('unweighted', function() {
 
     it('should return the correct path lengths.', function() {
       var graph = new Graph();
-      mergePath(graph, [1, 2, 3, 4]);
+      mergePath(graph, ['1', '2', '3', '4']);
 
       var lengths = library.singleSourceLength(graph, 1);
 
-      assert.deepEqual(lengths, {1: 0, 2: 1, 3: 2, 4: 3});
+      assert.deepStrictEqual(lengths, {1: 0, 2: 1, 3: 2, 4: 3});
     });
 
     it('should work even with multiple components.', function() {
@@ -224,20 +224,20 @@ describe('unweighted', function() {
 
       var lengths = library.singleSourceLength(graph, 2);
 
-      assert.deepEqual(lengths, {1: 1, 2: 0, 3: 1});
+      assert.deepStrictEqual(lengths, {1: 1, 2: 0, 3: 1});
 
       lengths = library.singleSourceLength(graph, 4);
 
-      assert.deepEqual(lengths, {4: 0, 5: 1, 6: 2});
+      assert.deepStrictEqual(lengths, {4: 0, 5: 1, 6: 2});
     });
 
     it('should take directedness into account.', function() {
       var graph = new DirectedGraph();
-      mergePath(graph, [1, 2, 3, 4]);
+      mergePath(graph, ['1', '2', '3', '4']);
 
       var lengths = library.singleSourceLength(graph, 4);
 
-      assert.deepEqual(lengths, {
+      assert.deepStrictEqual(lengths, {
         4: 0
       });
 
@@ -245,7 +245,7 @@ describe('unweighted', function() {
 
       lengths = library.singleSourceLength(graph, 4);
 
-      assert.deepEqual(lengths, {
+      assert.deepStrictEqual(lengths, {
         4: 0,
         2: 1,
         3: 2
@@ -254,11 +254,11 @@ describe('unweighted', function() {
 
     it('should be possible to use an undirected variant.', function() {
       var graph = new DirectedGraph();
-      mergePath(graph, [1, 2, 3, 4]);
+      mergePath(graph, ['1', '2', '3', '4']);
 
       var lengths = library.undirectedSingleSourceLength(graph, 4);
 
-      assert.deepEqual(lengths, {
+      assert.deepStrictEqual(lengths, {
         1: 3,
         2: 2,
         3: 1,
@@ -269,7 +269,7 @@ describe('unweighted', function() {
 
       lengths = library.singleSourceLength(graph, 4);
 
-      assert.deepEqual(lengths, {
+      assert.deepStrictEqual(lengths, {
         4: 0,
         2: 1,
         3: 2
@@ -286,11 +286,11 @@ describe('unweighted', function() {
 
       var path = library(graph, 2, 4);
 
-      assert.deepEqual(path, ['2', '3', '4']);
+      assert.deepStrictEqual(path, ['2', '3', '4']);
 
       var paths = library(graph, 2);
 
-      assert.deepEqual(paths, {
+      assert.deepStrictEqual(paths, {
         2: ['2'],
         3: ['2', '3'],
         4: ['2', '3', '4']
@@ -346,7 +346,7 @@ describe('unweighted', function() {
     it('applying Ulrik Brandes\' method should work properly.', function() {
       var result = library.brandes(graph, 1);
 
-      assert.deepEqual(result, expected);
+      assert.deepStrictEqual(result, expected);
     });
 
     it('the indexed version should also work properly.', function() {
@@ -374,9 +374,9 @@ describe('unweighted', function() {
         sigma[indexToNode[i]] = s;
       });
 
-      assert.deepEqual(S, expected[0]);
-      assert.deepEqual(P, expected[1]);
-      assert.deepEqual(sigma, expected[2]);
+      assert.deepStrictEqual(S, expected[0]);
+      assert.deepStrictEqual(P, expected[1]);
+      assert.deepStrictEqual(sigma, expected[2]);
 
       assert.doesNotThrow(function() {
         graph.forEachNode(function(node) {

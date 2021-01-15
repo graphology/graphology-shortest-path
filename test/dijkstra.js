@@ -36,11 +36,11 @@ describe('dijkstra', function() {
     it('should correctly find the shortest path between two nodes.', function() {
       var path = library.bidirectional(graph, 1, 9);
 
-      assert.deepEqual(path, ['1', '8', '7', '9']);
+      assert.deepStrictEqual(path, ['1', '8', '7', '9']);
 
       path = library.bidirectional(graph, 1, 6);
 
-      assert.deepEqual(path, ['1', '2', '4', '5', '6']);
+      assert.deepStrictEqual(path, ['1', '2', '4', '5', '6']);
 
       path = library.bidirectional(graph, 1, 11);
 
@@ -56,7 +56,7 @@ describe('dijkstra', function() {
 
       var path = library.bidirectional(otherGraph, 1, 2);
 
-      assert.deepEqual(path, ['1', '3', '2']);
+      assert.deepStrictEqual(path, ['1', '3', '2']);
     });
 
     it('should work with 0 weights.', function() {
@@ -71,7 +71,7 @@ describe('dijkstra', function() {
 
       var path = library.bidirectional(otherGraph, 'A', 'C');
 
-      assert.deepEqual(path, ['A', 'C']);
+      assert.deepStrictEqual(path, ['A', 'C']);
     });
   });
 
@@ -79,7 +79,7 @@ describe('dijkstra', function() {
     it('should correctly find the shortest path between source and all other nodes.', function() {
       var paths = library.singleSource(graph, '1');
 
-      assert.deepEqual(paths, {
+      assert.deepStrictEqual(paths, {
         1: ['1'],
         2: ['1', '2'],
         3: ['1', '2', '3'],
@@ -135,7 +135,7 @@ describe('dijkstra', function() {
     it('applying Ulrik Brandes\' method should work properly.', function() {
       var result = library.brandes(graph, '1');
 
-      assert.deepEqual(result, expected);
+      assert.deepStrictEqual(result, expected);
     });
 
     it('the indexed version should also work properly.', function() {
@@ -163,9 +163,9 @@ describe('dijkstra', function() {
         sigma[indexToNode[i]] = s;
       });
 
-      assert.deepEqual(S, expected[0]);
-      assert.deepEqual(P, expected[1]);
-      assert.deepEqual(sigma, expected[2]);
+      assert.deepStrictEqual(S, expected[0]);
+      assert.deepStrictEqual(P, expected[1]);
+      assert.deepStrictEqual(sigma, expected[2]);
 
       assert.doesNotThrow(function() {
         graph.forEachNode(function(node) {
